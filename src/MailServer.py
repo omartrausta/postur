@@ -94,8 +94,8 @@ class MailServer():
             print 'Server:\t+OK 2 320'                                          #
 
         elif request == 'UIDL':                                                 #
-            msg_1 = '1 whqtswO00WBw4144e4382sdf345f9t5JxYwZ'
-            msg_2 = '2 whqtswO00sadf4WBeaslk443234dfjhauZfe'
+            msg_1 = '1 whqtswO00WBw4144e4382sdf345f9t5JxY02'
+            msg_2 = '2 whqtswO00sadf4WBeaslk443234dfjhauZ02'
             self.conn.send('+OK\r\n')                                           #
             self.conn.send(msg_1 + '\r\n')
             self.conn.send(msg_2 + '\r\n')
@@ -137,10 +137,8 @@ class MailServer():
                 print 'Server:\t.'
 
         elif request == 'DELE':
-            if int(data) == 1:
-                self.conn.send('+OK message 1 deleted')
-                msg_1 = None
-                print 'Server:\t+Here is the beautiful message...'
+                self.conn.send('+OK\r\n')
+                print 'Server:\t+OK'
                 print 'Server:\t.'
 
         elif request == 'NOOP':                                                 #
