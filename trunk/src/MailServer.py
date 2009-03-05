@@ -35,12 +35,11 @@ class MailServer():
 
     def service_request(self):
         ''' How do we check requests from the user? '''
-        self.conn.send('+OK POP3 server ready\n\r')                             # Let everybody know that you are ready for the request
-        self.conn.send('\n\r')                                                  # -""-
+        self.conn.send('+OK POP3 server ready\r\n')                             # Let everybody know that you are ready for the request
         print 'Server:\t+OK POP3 server ready'                                  # -""-
 
         while self.continue_request_checking == True:                           # Should we still be checking for requests?
-        
+
             received_data = self.conn.recv(1024)                                # What does the user request?
             code, data = repr(received_data)[1:5], repr(received_data)[6:-5]    # Decipher the request
 
@@ -62,16 +61,20 @@ class MailServer():
     def check_authorization_requests(self, request, data=None):
         ''' How do we check authorization requests from the user? '''
         print "User:  \t", request, data                                        # Print the request
-        valid_request = True                                                    # The request is valid until proven otherwise
+        valid_request = True                                                    # The request is valid unless proven otherwise
 
         if request == 'USER':                                                   # If the request is user login
-            self.conn.send('+OK User accepted\n\r')                             # Accept
-            self.conn.send('\n\r')                                              # -""-
-            print 'Server:\t+OK  User accepted'                                # -""-
+            self.conn.send('+OK User accepted\r\n')                             # Accept
+            print 'Server:\t+OK  User accepted'                                 # -""-
+
+        elif request == 'PASS':                                                 # If the request is password
+            self.conn.send('+OK Pass accepted\r\n')                             # Accept
+            self.in_authorization_state = False                                 # We are no longer in authorization state?
+            self.in_transaction_state = True                                    # We are now in transaction state?
+            print 'Server:\t+OK Pass accepted'                                  # -""-
 
         elif request == 'QUIT':                                                 # If the request is Quit
-            self.conn.send('+OK')                                               # Accept
-            self.conn.send('\n\r')                                              # -""-
+            self.conn.send('+OK\r\n')                                           # Accept
             self.continue_request_checking = False                              # Stop checking requests
             print 'Server:\t+OK dewey POP3 server signing off'                  # -""-
 
@@ -86,14 +89,47 @@ class MailServer():
         print "User:  \t", request, data                                        # Print the request
         valid_request = True                                                    # The request is valid until proven otherwise
 
-        if request == 'STAT':                                                   # 
-            print 'STAT'                                                        #
+        if request == 'STAT':                                                   #
+            self.conn.send('+OK 2 320\r\n')                                     #
+            print 'Server:\t+OK 2 320'                                          #
 
-        elif request == 'LIST':                                                 # 
-            print 'LIST'                                                        #
+        elif request == 'UIDL':                                                 #
+            msg_1 = '1 whqtswO00WBw414e4382sdf345f9t5JxYwZ'
+            msg_2 = '2 whqtswO00sadfWBeaslk443234dfjhauZfe'
+            self.conn.send('+OK\r\n')                                           #
+            self.conn.send(msg_1 + '\r\n')
+            self.conn.send(msg_2 + '\r\n')
+            self.conn.send('.\r\n')                                             #
+            print 'Server:\t+OK'                                                #
+            print 'Server:\t' + msg_1
+            print 'Server:\t' + msg_2
+            print 'Server:\t.'                                                  #
 
-        elif request == 'RETR':                                                 # 
-            print 'RETR'                                                        #
+        elif request == 'LIST':                                                 #
+            self.conn.send('+OK 2 messages (320 octets)\r\n')                   #
+            self.conn.send('1 120\r\n')                                         #
+            self.conn.send('2 200\r\n')                                         #
+            self.conn.send('.\r\n')                                             #
+            print 'Server:\t+OK 2 messages (320 octets)'                        #
+            print 'Server:\t1 120'                                              #
+            print 'Server:\t1 200'                                              #
+            print 'Server:\t.'                                                  #
+
+        elif request == 'RETR':                                                 #
+            if int(data) == 1:
+                self.conn.send('+OK 120 octets\r\n')
+                self.conn.send('Here is the fucking message....\r\n')
+                self.conn.send('.\r\n')
+                print 'Server:\t+OK 120 octets'
+                print 'Server:\tHere is the fucking message....'
+                print 'Server:\t.'
+            elif int(data) == 2:
+                self.conn.send('+OK 200 octets\r\n')
+                self.conn.send('Here is the beautiful message...\r\n')
+                self.conn.send('.\r\n')
+                print 'Server:\t+OK 200 octets'
+                print 'Server:\tHere is the beautiful message...'
+                print 'Server:\t.'
 
         elif request == 'NOOP':                                                 #
             print 'NOOP'                                                        #
@@ -102,7 +138,9 @@ class MailServer():
             print 'RSET'                                                        #
 
         elif request == 'QUIT':                                                 #
-            print 'QUIT'                                                        #
+            self.conn.send('+OK\r\n')                                           # Accept
+            self.continue_request_checking = False                              # Stop checking requests
+            print 'Server:\t+OK dewey POP3 server signing off'                  # -""-
 
         else:                                                                   # If the request was not known...
             valid_request = False                                               # It was an invalid request
@@ -117,7 +155,7 @@ def main():
 
     if server_created:                                                          # If the server was created successfully...
         mail_server.wait_for_request()                                          # Be ready for requests...
-    
+
     print '\n*** Program Stopped ***'                                           # Print that the program is over
 
 main()
