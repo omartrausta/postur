@@ -131,6 +131,13 @@ class MailServer():
                 print 'Server:\tHere is the beautiful message...'
                 print 'Server:\t.'
 
+        elif request == 'DELE':
+            if int(data) == 1:
+                self.conn.send('+OK message 1 deleted')
+                msg_1 = None
+                print 'Server:\t+Here is the beautiful message...'
+                print 'Server:\t.'
+
         elif request == 'NOOP':                                                 #
             print 'NOOP'                                                        #
 
