@@ -1,4 +1,6 @@
-# Echo server program
+# Echo server progra
+# this file uses encoding:utf8
+
 import socket
 import os
 
@@ -94,8 +96,8 @@ class MailServer():
             print 'Server:\t+OK 2 320'                                          #
 
         elif request == 'UIDL':                                                 #
-            msg_1 = '1 whqtswO00WBw4144e4382sdf345f9t5JxY02'
-            msg_2 = '2 whqtswO00sadf4WBeaslk443234dfjhauZ02'
+            msg_1 = '1 whq34sdfsdsdfsdfsdfsdfYwZ'
+            msg_2 = '2 whqtssdffgsdfsdsdfdfsdffsdfd'
             self.conn.send('+OK\r\n')                                           #
             self.conn.send(msg_1 + '\r\n')
             self.conn.send(msg_2 + '\r\n')
@@ -124,17 +126,18 @@ class MailServer():
                 self.conn.send('Date: Fri, 21 Nov 1997 09:55:06 -0600\r\n')
                 self.conn.send('Message-ID: <1234@local.machine.example>\r\n')
                 self.conn.send('\nThis is a message just to say hello\r\n')
+
                 self.conn.send('.\r\n')
                 print 'Server:\t+OK 120 octets'
                 print 'Server:\t.'
             elif int(data) == 2:
                 self.conn.send('+OK 200 octets\r\n')
-                self.conn.send('From: John Doe <jdoe@machine.example>\r\n')
-                self.conn.send('To: John Doe <jdoe@machine.example>\r\n')
+                self.conn.send('From: Dabbi Grensas <dabbi@grensas.is>\r\n')
+                self.conn.send('To: Dabbi Breidholt <jdoe@machine.example>\r\n')
                 self.conn.send('Subject: Saying Hello\r\n')
                 self.conn.send('Date: Fri, 21 Nov 1997 09:55:06 -0600\r\n')
                 self.conn.send('Message-ID: <1234@local.machine.example>\r\n')
-                self.conn.send('\nThis is a message just to say hello\r\n')
+                self.conn.send('\nÞú verður laminn á Rex um helgina\r\n')
                 self.conn.send('.\r\n')
                 print 'Server:\t+OK 200 octets'
                 print 'Server:\tHere is the beautiful message...'
