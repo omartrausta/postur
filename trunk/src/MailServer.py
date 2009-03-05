@@ -94,8 +94,8 @@ class MailServer():
             print 'Server:\t+OK 2 320'                                          #
 
         elif request == 'UIDL':                                                 #
-            msg_1 = '1 whqtswO00WBw414e4382sdf345f9t5JxYwZ'
-            msg_2 = '2 whqtswO00sadfWBeaslk443234dfjhauZfe'
+            msg_1 = '1 whqtswO00WBw4144e4382sdf345f9t5JxYwZ'
+            msg_2 = '2 whqtswO00sadf4WBeaslk443234dfjhauZfe'
             self.conn.send('+OK\r\n')                                           #
             self.conn.send(msg_1 + '\r\n')
             self.conn.send(msg_2 + '\r\n')
@@ -118,7 +118,7 @@ class MailServer():
         elif request == 'RETR':                                                 #
             if int(data) == 1:
                 self.conn.send('+OK 120 octets\r\n')
-                self.conn.send('Here is the fucking message....\r\n')
+                self.conn.send('From:ellioman@gmail.comBody:Here is the fucking message....\r\n')
                 self.conn.send('.\r\n')
                 print 'Server:\t+OK 120 octets'
                 print 'Server:\tHere is the fucking message....'
