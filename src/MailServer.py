@@ -118,7 +118,15 @@ class MailServer():
         elif request == 'RETR':                                                 #
             if int(data) == 1:
                 self.conn.send('+OK 120 octets\r\n')
-                self.conn.send('From:ellioman@gmail.comBody:Here is the fucking message....\r\n')
+<<<<<<< .mine
+                self.conn.send('From: John Doe <jdoe@machine.example>\r\n')
+                self.conn.send('To: John Doe <jdoe@machine.example>\r\n')
+                self.conn.send('Subject: Saying Hello\r\n')
+                self.conn.send('Date: Fri, 21 Nov 1997 09:55:06 -0600\r\n')
+                self.conn.send('Message-ID: <1234@local.machine.example>\r\n')
+                self.conn.send('\nThis is a message just to say hello\r\n')
+=======
+
                 self.conn.send('.\r\n')
                 print 'Server:\t+OK 120 octets'
                 print 'Server:\tHere is the fucking message....'
