@@ -100,8 +100,7 @@ class MailServer():
         print fileCount
         count = 1;
         size = fileCount*200
-        strSize = str(size)
-        msgCount = 1                                                                        # The request is valid until proven otherwise
+        strSize = str(size)                                                                       # The request is valid until proven otherwise
 
 
 
@@ -140,8 +139,9 @@ class MailServer():
             print 'Server:\t.'                                                  #
 
         elif request == 'RETR':
-            if int(data) == msgCount:
-                msg = dirList[msgCount-1]
+            if int(data):
+                msgCount = int(data)-1
+                msg = dirList[msgCount]
                 infile = open(path2+'\\'+msg)
                 self.conn.send('+OK 200 octets\r\n')
                 self.conn.send(infile.readline()+'\n')
@@ -153,7 +153,7 @@ class MailServer():
                 self.conn.send('.\r\n')
                 print 'Server:\t+OK 120 octets'
                 print 'Server:\t.'
-                msgCount +=1
+
 
 
         elif request == 'DELE':
