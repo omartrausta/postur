@@ -1,4 +1,4 @@
-# Echo server progra
+# Echo server program
 # this file uses encoding:utf8
 
 import socket
@@ -89,59 +89,72 @@ class MailServer():
     def check_transaction_requests(self, request, data=None):
         ''' How do we check transaction requests from the user? '''
         print "User:  \t", request, data                                        # Print the request
-        valid_request = True                                                    # The request is valid until proven otherwise
+        valid_request = True
+
+        path = os.getcwd()
+        path2 = path+'\messages'
+
+        dirList = os.listdir(path2)
+        print dirList
+        fileCount = dirList.__len__()
+        print fileCount
+        count = 1;
+        size = fileCount*200
+        strSize = str(size)
+        msgCount = 1                                                                        # The request is valid until proven otherwise
+
+
 
         if request == 'STAT':                                                   #
-            self.conn.send('+OK 2 320\r\n')                                     #
-            print 'Server:\t+OK 2 320'                                          #
+            self.conn.send('+OK '+ str(fileCount) + ' '+ strSize +'\r\n')                                     #
+            print 'Server:\t+OK '+ str(fileCount) + ' '+ strSize                                          #
 
         elif request == 'UIDL':                                                 #
             msg_1 = '1 whq34sdfsdsdfsdfsdfsdfYwZ'
             msg_2 = '2 whqtssdffgsdfsdsdfdfsdffsdfd'
-            self.conn.send('+OK\r\n')                                           #
-            self.conn.send(msg_1 + '\r\n')
-            self.conn.send(msg_2 + '\r\n')
-            self.conn.send('.\r\n')                                             #
-            print 'Server:\t+OK'                                                #
-            print 'Server:\t' + msg_1
-            print 'Server:\t' + msg_2
-            print 'Server:\t.'                                                  #
+            self.conn.send('+OK\r\n')
+            while count<fileCount+1:
+                self.conn.send(count+ ' '+ file + '\r\n')
+                count +=1
+
+            self.conn.send('.\r\n')
+            count = 1
+            print 'Server:\t+OK'
+            while count<fileCount+1:
+                print 'Server:\t' + count+ ' '+ file
+
+            print 'Server:\t.'
+            count = 1
 
         elif request == 'LIST':                                                 #
-            self.conn.send('+OK 2 messages (320 octets)\r\n')                   #
-            self.conn.send('1 120\r\n')                                         #
-            self.conn.send('2 200\r\n')                                         #
-            self.conn.send('.\r\n')                                             #
+            self.conn.send('+OK '+ str(fileCount) + ' messages ('+strSize+ ' octets)\r\n')
+            while count<fileCount+1:
+                self.conn.send(str(count) + ' 200 \r\n')
+                count +=1
+
+            self.conn.send('.\r\n')
+            count = 1
             print 'Server:\t+OK 2 messages (320 octets)'                        #
             print 'Server:\t1 120'                                              #
             print 'Server:\t1 200'                                              #
             print 'Server:\t.'                                                  #
 
-        elif request == 'RETR':                                                 #
-            if int(data) == 1:
-                self.conn.send('+OK 120 octets\r\n')
-                self.conn.send('From: John Doe <jdoe@machine.example>\r\n')
-                self.conn.send('To: John Doe <jdoe@machine.example>\r\n')
-                self.conn.send('Subject: Saying Hello\r\n')
-                self.conn.send('Date: Fri, 21 Nov 1997 09:55:06 -0600\r\n')
-                self.conn.send('Message-ID: <1234@local.machine.example>\r\n')
-                self.conn.send('\nThis is a message just to say hello\r\n')
-
+        elif request == 'RETR':
+            if int(data) == msgCount:
+                msg = dirList[msgCount-1]
+                infile = open(path2+'\\'+msg)
+                self.conn.send('+OK 200 octets\r\n')
+                self.conn.send(infile.readline()+'\n')
+                self.conn.send(infile.readline()+'\n')
+                self.conn.send(infile.readline()+'\n')
+                self.conn.send(infile.readline()+'\n')
+                self.conn.send(infile.readline()+'\n')
+                self.conn.send('\n'+infile.read()+'\n')
                 self.conn.send('.\r\n')
                 print 'Server:\t+OK 120 octets'
                 print 'Server:\t.'
-            elif int(data) == 2:
-                self.conn.send('+OK 200 octets\r\n')
-                self.conn.send('From: Dabbi Grensas <dabbi@grensas.is>\r\n')
-                self.conn.send('To: Dabbi Breidholt <jdoe@machine.example>\r\n')
-                self.conn.send('Subject: Saying Hello\r\n')
-                self.conn.send('Date: Fri, 21 Nov 1997 09:55:06 -0600\r\n')
-                self.conn.send('Message-ID: <1234@local.machine.example>\r\n')
-                self.conn.send('\nÞú verður laminn á Rex um helgina\r\n')
-                self.conn.send('.\r\n')
-                print 'Server:\t+OK 200 octets'
-                print 'Server:\tHere is the beautiful message...'
-                print 'Server:\t.'
+                msgCount +=1
+
 
         elif request == 'DELE':
                 self.conn.send('+OK\r\n')
