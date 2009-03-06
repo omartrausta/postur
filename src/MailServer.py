@@ -5,7 +5,7 @@ import socket
 import os
 
 HOST = ''       # Symbolic name meaning the local host
-PORT = 2221     # Arbitrary non-privileged port
+PORT = 110     # Arbitrary non-privileged port
 
 class MailServer():
 
