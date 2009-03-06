@@ -165,11 +165,16 @@ class MailServer():
                 self.conn.send('.\r\n')
                 print 'Server:\t+OK 120 octets'
                 print 'Server:\t.'
+                infile.close()
+    
 
 
 
         elif request == 'DELE':
+                delCount = int(data)-1
                 self.conn.send('+OK\r\n')
+                msg = dirList[delCount]
+                os.remove(path2+os.sep+msg)
                 print 'Server:\t+OK'
                 print 'Server:\t.'
 
