@@ -92,7 +92,7 @@ class MailServer():
         valid_request = True
 
         path = os.getcwd()
-        path2 = path+'\messages'
+        path2 = path+os.sep+'messages'
 
         dirList = os.listdir(path2)
         print dirList
@@ -142,7 +142,7 @@ class MailServer():
             if int(data):
                 msgCount = int(data)-1
                 msg = dirList[msgCount]
-                infile = open(path2+'\\'+msg)
+                infile = open(path2+os.sep+msg)
                 self.conn.send('+OK 200 octets\r\n')
                 self.conn.send(infile.readline()+'\n')
                 self.conn.send(infile.readline()+'\n')
