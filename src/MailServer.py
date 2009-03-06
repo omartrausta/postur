@@ -8,6 +8,14 @@ HOST = ''       # Symbolic name meaning the local host
 PORT = 2221     # Arbitrary non-privileged port
 
 class MailServer():
+
+    fileCount = 0
+    strSize = 0
+    count = 0
+    dirList = None
+    path = None
+    path2 = None
+
     def __init__(self):
         ''' Initialize the mail server '''
         self.continue_request_checking = True                                   # Is the session still on?
@@ -90,27 +98,31 @@ class MailServer():
         ''' How do we check transaction requests from the user? '''
         print "User:  \t", request, data                                        # Print the request
         valid_request = True
+                                                                                 # The request is valid until proven otherwise
+        if request == 'STAT':
 
-        path = os.getcwd()
-        path2 = path+os.sep+'messages'
-
-        dirList = os.listdir(path2)
-        print dirList
-        fileCount = dirList.__len__()
-        print fileCount
-        count = 1;
-        size = fileCount*200
-        strSize = str(size)                                                                       # The request is valid until proven otherwise
-
-
-
-        if request == 'STAT':                                                   #
+            global path
+            path = os.getcwd()
+            global path2
+            path2 = path + os.sep +'messages'
+            global dirList
+            dirList = os.listdir(path2)
+            print dirList
+            global fileCount
+            fileCount = dirList.__len__()
+            print fileCount
+            
+            global count
+            count = 1;
+            size = fileCount*200
+            global strSize
+            strSize = str(size)
+            
             self.conn.send('+OK '+ str(fileCount) + ' '+ strSize +'\r\n')                                     #
             print 'Server:\t+OK '+ str(fileCount) + ' '+ strSize                                          #
 
-        elif request == 'UIDL':                                                 #
-            msg_1 = '1 whq34sdfsdsdfsdfsdfsdfYwZ'
-            msg_2 = '2 whqtssdffgsdfsdsdfdfsdffsdfd'
+        elif request == 'UIDL':
+    
             self.conn.send('+OK\r\n')
             while count<fileCount+1:
                 self.conn.send(count+ ' '+ file + '\r\n')
@@ -181,7 +193,10 @@ class MailServer():
 def main():
     ''' Main part of the Assignment '''
     mail_server = MailServer()                                                  # Create the Mail Server class
-    server_created = mail_server.create()                                       # Try to connect the Server
+    server_created = mail_server.create()
+
+
+                                                                            # Try to connect the Server
 
     if server_created:                                                          # If the server was created successfully...
         mail_server.wait_for_request()                                          # Be ready for requests...
