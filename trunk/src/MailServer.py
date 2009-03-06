@@ -38,7 +38,7 @@ class MailServer():
 
     def wait_for_request(self):
         '''  How do we wait for requests? '''
-        self.conn, addr = self.s.accept()                                       # Wait for a request
+        self.conn, addr = self.s.accept()                                                                          # Wait for a request
 
         print 'Request made by', addr, "\n"                                     # When a request comes...
         self.service_request()                                                  # service it...
@@ -86,7 +86,17 @@ class MailServer():
         elif request == 'QUIT':                                                 # If the request is Quit
             self.conn.send('+OK\r\n')                                           # Accept
             self.continue_request_checking = False                              # Stop checking requests
-            print 'Server:\t+OK dewey POP3 server signing off'                  # -""-
+            print 'Server:\t+OK dewey POP3 server signing off'
+
+        elif request == 'AUTH':
+            self.conn.send('+OK')
+            self.in_authorization_state = False
+            self.in_transaction_state = True
+
+        elif request == 'CAPA':
+            self.conn.send('+OK')
+            self.in_authorization_state = False
+            self.in_transaction_state = True
 
         else:                                                                   # If the request was not known...
             valid_request = False                                               # Then it was an invalid request
@@ -107,35 +117,40 @@ class MailServer():
             path2 = path + os.sep +'messages'
             global dirList
             dirList = os.listdir(path2)
-            print dirList
             global fileCount
             fileCount = dirList.__len__()
             print fileCount
             
             global count
             count = 1;
-            size = fileCount*300
+            size = fileCount*200
             global strSize
             strSize = str(size)
             
             self.conn.send('+OK '+ str(fileCount) + ' '+ strSize +'\r\n')                                     #
-            print 'Server:\t+OK '+ str(fileCount) + ' '+ strSize                                          #
+            print 'Server:\t+OK messages: '+ str(fileCount) + ' total size: '+ strSize                                          #
 
         elif request == 'UIDL':
     
             self.conn.send('+OK\r\n')
+            global count
             while count<fileCount+1:
-                self.conn.send(str(count)+ ' '+ file + '\r\n')
+                self.conn.send(str(count)+ ' '+ dirList[count-1] + '\r\n')
                 count +=1
 
-            self.conn.send('.\r\n')
+ 
             count = 1
             print 'Server:\t+OK'
             while count<fileCount+1:
-                print 'Server:\t' + count+ ' '+ file
+                print 'Server:\t' + str(count)+ ' '+ dirList[count-1]
+                count +=1
 
             print 'Server:\t.'
             count = 1
+
+            self.conn.send('.\r\n')
+
+
 
         elif request == 'LIST':                                                 #
             self.conn.send('+OK '+ str(fileCount) + ' messages ('+strSize+ ' octets)\r\n')
@@ -145,9 +160,7 @@ class MailServer():
 
             self.conn.send('.\r\n')
             count = 1
-            print 'Server:\t+OK 2 messages (320 octets)'                        #
-            print 'Server:\t1 120'                                              #
-            print 'Server:\t1 200'                                              #
+            print dirList                                              #
             print 'Server:\t.'                                                  #
 
         elif request == 'RETR':
@@ -155,7 +168,7 @@ class MailServer():
                 msgCount = int(data)-1
                 msg = dirList[msgCount]
                 infile = open(path2+os.sep+msg)
-                self.conn.send('+OK 300 octets\r\n')
+                self.conn.send('+OK 200 octets\r\n')
                 self.conn.send(infile.readline())
                 self.conn.send(infile.readline())
                 self.conn.send(infile.readline())
@@ -163,13 +176,20 @@ class MailServer():
                 self.conn.send(infile.readline())
                 self.conn.send(infile.read()+'\r\n')
                 self.conn.send('.\r\n')
-                print 'Server:\t+OK 120 octets'
+                print 'Server:\t+OK'
+                print 'File message sent: '+ path2+os.sep+msg
                 print 'Server:\t.'
+                infile.close()
+    
 
 
 
         elif request == 'DELE':
+                delCount = int(data)-1
                 self.conn.send('+OK\r\n')
+                msg = dirList[delCount]
+                os.remove(path2+os.sep+msg)
+                print 'file deleted: ' + path2+os.sep+msg
                 print 'Server:\t+OK'
                 print 'Server:\t.'
 
