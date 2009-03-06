@@ -107,7 +107,6 @@ class MailServer():
             path2 = path + os.sep +'messages'
             global dirList
             dirList = os.listdir(path2)
-            print dirList
             global fileCount
             fileCount = dirList.__len__()
             print fileCount
@@ -119,7 +118,7 @@ class MailServer():
             strSize = str(size)
             
             self.conn.send('+OK '+ str(fileCount) + ' '+ strSize +'\r\n')                                     #
-            print 'Server:\t+OK '+ str(fileCount) + ' '+ strSize                                          #
+            print 'Server:\t+OK messages: '+ str(fileCount) + ' total size: '+ strSize                                          #
 
         elif request == 'UIDL':
     
@@ -145,9 +144,7 @@ class MailServer():
 
             self.conn.send('.\r\n')
             count = 1
-            print 'Server:\t+OK 2 messages (320 octets)'                        #
-            print 'Server:\t1 120'                                              #
-            print 'Server:\t1 200'                                              #
+            print dirList                                              #
             print 'Server:\t.'                                                  #
 
         elif request == 'RETR':
@@ -163,7 +160,8 @@ class MailServer():
                 self.conn.send(infile.readline()+'\n')
                 self.conn.send('\n'+infile.read()+'\n')
                 self.conn.send('.\r\n')
-                print 'Server:\t+OK 120 octets'
+                print 'Server:\t+OK'
+                print 'File message sent: '+ path2+os.sep+msg
                 print 'Server:\t.'
                 infile.close()
     
@@ -175,6 +173,7 @@ class MailServer():
                 self.conn.send('+OK\r\n')
                 msg = dirList[delCount]
                 os.remove(path2+os.sep+msg)
+                print 'file deleted: ' + path2+os.sep+msg
                 print 'Server:\t+OK'
                 print 'Server:\t.'
 
